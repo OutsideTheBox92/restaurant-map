@@ -20,16 +20,8 @@
       color: #fff;
     }
 
-    header h1 {
-      margin: 0;
-      font-size: 1.1rem;
-    }
-
-    header p {
-      margin: 0.25rem 0 0;
-      font-size: 0.85rem;
-      opacity: 0.85;
-    }
+    header h1 { margin: 0; font-size: 1.1rem; }
+    header p { margin: 0.25rem 0 0; font-size: 0.85rem; opacity: 0.85; }
 
     #controls {
       padding: 0.75rem 1rem;
@@ -41,52 +33,16 @@
       border-bottom: 1px solid #e0e0e0;
     }
 
-    .control-block {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-      font-size: 0.9rem;
-    }
-
-    .control-block label {
-      font-weight: 600;
-      font-size: 0.85rem;
-    }
-
-    .type-options {
-      display: flex;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-    }
-
-    .type-options label {
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-      cursor: pointer;
-      font-weight: normal;
-    }
-
-    .control-block select,
-    .control-block input[type="number"] {
-      padding: 0.2rem 0.4rem;
-      font-size: 0.9rem;
-      border-radius: 4px;
-      border: 1px solid #d1d5db;
-      min-width: 80px;
-    }
+    .control-block { display: flex; flex-direction: column; gap: 0.25rem; }
+    .type-options { display: flex; gap: 0.75rem; flex-wrap: wrap; }
 
     #map-and-panel {
       display: grid;
       grid-template-columns: minmax(0, 2fr) minmax(0, 1.4fr);
-      gap: 0;
       height: calc(100vh - 140px);
     }
 
-    #map {
-      width: 100%;
-      height: 100%;
-    }
+    #map { width: 100%; height: 100%; }
 
     #details {
       background: #ffffff;
@@ -95,93 +51,31 @@
       overflow-y: auto;
     }
 
-    #placeTitle {
-      margin: 0 0 0.25rem;
-      font-size: 1.1rem;
-      font-weight: 600;
-    }
+    #placeTitle { font-size: 1.1rem; font-weight: 600; margin: 0; }
+    #placeAddress { color: #555; margin: 0.2rem 0 0.5rem; }
 
-    #placeAddress {
-      margin: 0 0 0.25rem;
-      font-size: 0.9rem;
-      color: #555;
-    }
-
-    #placeMeta {
-      margin: 0.25rem 0 0.75rem;
-      font-size: 0.9rem;
-    }
-
-    .meta-row {
-      margin-bottom: 0.35rem;
-      font-size: 0.9rem;
-    }
-
-    .meta-label {
-      font-weight: 600;
-    }
-
-    .tag-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.35rem;
-      margin: 0.5rem 0 1rem;
-    }
-
-    .tag {
-      padding: 0.15rem 0.5rem;
-      border-radius: 999px;
-      border: 1px solid #e0e0e0;
-      font-size: 0.75rem;
-      background: #f8fafc;
-    }
-
-    a {
-      color: #2563eb;
-      text-decoration: none;
-    }
-
-    a:hover {
-      text-decoration: underline;
-    }
+    .tag { padding: 4px 8px; border-radius: 999px; background: #f3f4f6; border: 1px solid #e5e7eb; font-size: 12px; }
 
     @media (max-width: 900px) {
-      #map-and-panel {
-        grid-template-columns: 1fr;
-        grid-template-rows: 50vh auto;
-        height: auto;
-      }
-
-      #details {
-        border-left: none;
-        border-top: 1px solid #e0e0e0;
-        height: auto;
-      }
+      #map-and-panel { grid-template-columns: 1fr; grid-template-rows: 50vh auto; }
+      #details { border-left: none; border-top: 1px solid #e0e0e0; }
     }
   </style>
 </head>
+
 <body>
   <header>
     <h1>Prospektering – Restauranger & kaféer</h1>
-    <p>Filtrera på typ, betyg, recensioner och prisnivå. Klicka på en markör för detaljer och Street View.</p>
+    <p>Filtrera och klicka på en markör för detaljer.</p>
   </header>
 
   <section id="controls">
     <div class="control-block">
       <label>Typ av plats</label>
       <div class="type-options">
-        <label>
-          <input type="radio" name="placeType" value="all" checked />
-          Alla
-        </label>
-        <label>
-          <input type="radio" name="placeType" value="restaurant" />
-          Restauranger
-        </label>
-        <label>
-          <input type="radio" name="placeType" value="cafe" />
-          Kaféer
-        </label>
+        <label><input type="radio" name="placeType" value="all" checked /> Alla</label>
+        <label><input type="radio" name="placeType" value="restaurant" /> Restauranger</label>
+        <label><input type="radio" name="placeType" value="cafe" /> Kaféer</label>
       </div>
     </div>
 
@@ -218,20 +112,16 @@
     <aside id="details">
       <h2 id="placeTitle">Ingen plats vald</h2>
       <p id="placeAddress"></p>
-      <div id="placeMeta">
-        <p>Välj en markör i kartan för att se information om restaurangen eller kaféet.</p>
-      </div>
-      <div class="tag-row" id="tagRow"></div>
+      <div id="placeMeta"><p>Välj en markör i kartan.</p></div>
+
+      <div id="tagRow" style="display:flex; gap:6px; flex-wrap:wrap; margin-top:12px;"></div>
     </aside>
   </div>
 
   <script>
-    // Din nyckel (används även för Street View-bild)
     const GOOGLE_API_KEY = "AIzaSyAGWBVPiQLze9-6NBDsCW3MI_UuvQ8SbbE";
 
-    let map;
-    let placesService;
-    let infoWindow;
+    let map, placesService, infoWindow;
     let markers = [];
     const loadedPlaceIds = new Set();
 
@@ -240,391 +130,236 @@
     let minReviews = 0;
     let priceFilter = "all";
 
-    const placeTitleEl   = document.getElementById("placeTitle");
-    const placeAddressEl = document.getElementById("placeAddress");
-    const placeMetaEl    = document.getElementById("placeMeta");
-    const tagRowEl       = document.getElementById("tagRow");
+    const titleEl = document.getElementById("placeTitle");
+    const addressEl = document.getElementById("placeAddress");
+    const metaEl = document.getElementById("placeMeta");
+    const tagRowEl = document.getElementById("tagRow");
 
-    // Filter-lyssnare
-    document.querySelectorAll('input[name="placeType"]').forEach((radio) => {
-      radio.addEventListener("change", (e) => {
+    // Filters
+    document.querySelectorAll('input[name="placeType"]').forEach(r =>
+      r.addEventListener("change", e => {
         currentTypeFilter = e.target.value;
-        updateMarkersVisibility();
-      });
+        updateMarkers();
+      })
+    );
+    document.getElementById("minRating").addEventListener("change", e => {
+      minRating = parseFloat(e.target.value);
+      updateMarkers();
     });
-
-    document.getElementById("minRating").addEventListener("change", (e) => {
-      minRating = parseFloat(e.target.value) || 0;
-      updateMarkersVisibility();
+    document.getElementById("minReviews").addEventListener("input", e => {
+      minReviews = parseInt(e.target.value || "0");
+      updateMarkers();
     });
-
-    document.getElementById("minReviews").addEventListener("input", (e) => {
-      minReviews = parseInt(e.target.value || "0", 10);
-      updateMarkersVisibility();
-    });
-
-    document.getElementById("priceFilter").addEventListener("change", (e) => {
+    document.getElementById("priceFilter").addEventListener("change", e => {
       priceFilter = e.target.value;
-      updateMarkersVisibility();
+      updateMarkers();
     });
 
-    function formatPriceLevel(priceLevel) {
-      if (priceLevel == null) return "Okänd";
-      switch (priceLevel) {
-        case 0: return "Mycket billigt";
-        case 1: return "Billigt";
-        case 2: return "Medel";
-        case 3: return "Dyrare";
-        case 4: return "Lyx";
-        default: return "Okänd";
-      }
-    }
-
-    function formatRating(rating, total) {
-      if (rating == null) return "Inga betyg";
-      const parts = [];
-      parts.push(rating.toFixed(1) + " / 5");
-      if (typeof total === "number") {
-        parts.push("(" + total + " omdömen)");
-      }
-      return parts.join(" ");
-    }
-
-    function formatOpenStatus(openingHours) {
-      if (!openingHours) return "Okänt";
-      if (typeof openingHours.isOpen === "function") {
-        return openingHours.isOpen() ? "Öppet nu" : "Stängt nu";
-      }
-      if (typeof openingHours.open_now === "boolean") {
-        return openingHours.open_now ? "Öppet nu" : "Stängt nu";
-      }
-      return "Okänt";
-    }
-
-    function formatOpeningHours(openingHours) {
-      if (!openingHours || !Array.isArray(openingHours.weekday_text)) {
-        return "Ingen information om öppettider.";
-      }
-      return openingHours.weekday_text.join("<br>");
-    }
-
-    function getStreetViewUrl(placeObj) {
-      if (!placeObj.location) return null;
-      const lat = typeof placeObj.location.lat === "function"
-        ? placeObj.location.lat()
-        : placeObj.location.lat;
-      const lng = typeof placeObj.location.lng === "function"
-        ? placeObj.location.lng()
-        : placeObj.location.lng;
-      return (
-        "https://maps.googleapis.com/maps/api/streetview" +
-        "?size=320x160" +
-        "&location=" + encodeURIComponent(lat + "," + lng) +
-        "&key=" + GOOGLE_API_KEY
-      );
-    }
-
-    function clearDetails() {
-      placeTitleEl.textContent   = "Ingen plats vald";
-      placeAddressEl.textContent = "";
-      placeMetaEl.innerHTML      = "<p>Välj en markör i kartan för att se information om restaurangen eller kaféet.</p>";
-      tagRowEl.innerHTML         = "";
-    }
-
+    // -------- INIT MAP --------
     function initMap() {
-      const center = { lat: 59.334, lng: 18.063 }; // Stockholm
+      const center = { lat: 59.334, lng: 18.063 };
 
       map = new google.maps.Map(document.getElementById("map"), {
         center,
-        zoom: 13,
+        zoom: 14,
       });
 
-      infoWindow = new google.maps.InfoWindow();
       placesService = new google.maps.places.PlacesService(map);
+      infoWindow = new google.maps.InfoWindow();
 
       loadNearbyPlaces(center);
 
-      // Ladda fler platser när kartan flyttas (pan/zoom)
       map.addListener("idle", () => {
         const c = map.getCenter();
         if (!c) return;
-        const centerNow = { lat: c.lat(), lng: c.lng() };
-        loadNearbyPlaces(centerNow);
+        loadNearbyPlaces({ lat: c.lat(), lng: c.lng() });
       });
     }
 
+    // -------- LOAD PLACES WITH PAGINATION --------
     function loadNearbyPlaces(center) {
       const requests = [
         { location: center, radius: 2000, type: "restaurant" },
         { location: center, radius: 2000, type: "cafe" },
       ];
 
-      requests.forEach((req) => {
-        placesService.nearbySearch(req, (results, status) => {
-          if (
-            status !== google.maps.places.PlacesServiceStatus.OK ||
-            !results
-          ) {
-            return;
-          }
+      requests.forEach(req => {
+        function handleResults(results, status, pagination) {
+          if (status !== google.maps.places.PlacesServiceStatus.OK) return;
 
-          results.forEach((place) => {
-            if (!place.geometry || !place.geometry.location) return;
+          results.forEach(place => {
+            if (!place.geometry) return;
             if (loadedPlaceIds.has(place.place_id)) return;
-            loadedPlaceIds.add(place.place_id);
 
-            const placeType = req.type; // "restaurant" eller "cafe"
+            loadedPlaceIds.add(place.place_id);
 
             const placeObj = {
               id: place.place_id,
               name: place.name,
-              type: placeType,
+              type: req.type,
               location: place.geometry.location,
-              basicAddress: place.vicinity || "",
-              detailsLoaded: false,
               rating: place.rating ?? null,
               user_ratings_total: place.user_ratings_total ?? null,
               price_level: place.price_level ?? null,
+              basicAddress: place.vicinity ?? "",
               formatted_address: null,
               formatted_phone_number: null,
+              opening_hours: place.opening_hours ?? null,
               website: null,
-              opening_hours: place.opening_hours || null,
+              detailsLoaded: false,
             };
 
             createMarker(placeObj);
-            // Hämta detaljer för telefon, fulla öppettider etc.
             fetchPlaceDetails(placeObj);
           });
 
-          updateMarkersVisibility();
-        });
-      });
-    }
+          updateMarkers();
 
-    function fetchPlaceDetails(placeObj) {
-      const request = {
-        placeId: placeObj.id,
-        fields: [
-          "name",
-          "rating",
-          "user_ratings_total",
-          "price_level",
-          "formatted_address",
-          "formatted_phone_number",
-          "website",
-          "opening_hours",
-          "geometry"
-        ],
-      };
-
-      placesService.getDetails(request, (result, status) => {
-        if (status !== google.maps.places.PlacesServiceStatus.OK || !result) {
-          return;
+          if (pagination && pagination.hasNextPage) {
+            setTimeout(() => pagination.nextPage(), 500);
+          }
         }
 
-        placeObj.detailsLoaded          = true;
-        placeObj.name                   = result.name || placeObj.name;
-        placeObj.rating                 = result.rating ?? placeObj.rating;
-        placeObj.user_ratings_total     = result.user_ratings_total ?? placeObj.user_ratings_total;
-        placeObj.price_level            = result.price_level ?? placeObj.price_level;
-        placeObj.formatted_address      = result.formatted_address || placeObj.basicAddress;
-        placeObj.formatted_phone_number = result.formatted_phone_number || null;
-        placeObj.website                = result.website || null;
-        placeObj.opening_hours          = result.opening_hours || placeObj.opening_hours || null;
-        placeObj.location               = result.geometry?.location || placeObj.location;
-
-        updateMarkersVisibility();
+        placesService.nearbySearch(req, handleResults);
       });
     }
 
-    function createMarker(placeObj) {
-      // Färgkod: röd = restaurang, blå = kafé
+    // -------- GET DETAILS --------
+    function fetchPlaceDetails(obj) {
+      placesService.getDetails(
+        {
+          placeId: obj.id,
+          fields: [
+            "name",
+            "formatted_address",
+            "formatted_phone_number",
+            "opening_hours",
+            "website",
+            "geometry",
+            "rating",
+            "user_ratings_total",
+            "price_level",
+          ],
+        },
+        (res, status) => {
+          if (status !== "OK" || !res) return;
+
+          obj.detailsLoaded = true;
+          obj.name = res.name || obj.name;
+          obj.formatted_address = res.formatted_address || obj.basicAddress;
+          obj.formatted_phone_number = res.formatted_phone_number || null;
+          obj.opening_hours = res.opening_hours || obj.opening_hours;
+          obj.website = res.website || null;
+          obj.rating = res.rating ?? obj.rating;
+          obj.user_ratings_total = res.user_ratings_total ?? obj.user_ratings_total;
+          obj.price_level = res.price_level ?? obj.price_level;
+        }
+      );
+    }
+
+    // -------- CREATE MARKER --------
+    function createMarker(obj) {
       const icon =
-        placeObj.type === "restaurant"
-          ? {
-              path: google.maps.SymbolPath.CIRCLE,
-              scale: 6,
-              fillColor: "#e53935",
-              fillOpacity: 1,
-              strokeColor: "#b71c1c",
-              strokeWeight: 1,
-            }
-          : {
-              path: google.maps.SymbolPath.CIRCLE,
-              scale: 6,
-              fillColor: "#1e88e5",
-              fillOpacity: 1,
-              strokeColor: "#0d47a1",
-              strokeWeight: 1,
-            };
+        obj.type === "restaurant"
+          ? { path: google.maps.SymbolPath.CIRCLE, scale: 7, fillColor: "#d32f2f", fillOpacity: 1, strokeWeight: 1 }
+          : { path: google.maps.SymbolPath.CIRCLE, scale: 7, fillColor: "#1976d2", fillOpacity: 1, strokeWeight: 1 };
 
       const marker = new google.maps.Marker({
         map,
-        position: placeObj.location,
+        position: obj.location,
         icon,
       });
 
       marker.addListener("click", () => {
-        onMarkerClick(placeObj, marker);
+        showInfoWindow(obj, marker);
+        renderDetails(obj);
       });
 
-      markers.push({ marker, placeObj });
+      markers.push({ marker, obj });
     }
 
-    function updateMarkersVisibility() {
-      markers.forEach(({ marker, placeObj }) => {
+    // -------- UPDATE VISIBILITY --------
+    function updateMarkers() {
+      markers.forEach(({ marker, obj }) => {
         let visible = true;
 
-        // Typfilter
-        if (currentTypeFilter !== "all" && placeObj.type !== currentTypeFilter) {
-          visible = false;
-        }
+        if (currentTypeFilter !== "all" && obj.type !== currentTypeFilter) visible = false;
+        if (minRating > 0 && (!obj.rating || obj.rating < minRating)) visible = false;
+        if (minReviews > 0 && (!obj.user_ratings_total || obj.user_ratings_total < minReviews)) visible = false;
 
-        // Betygsfilter
-        const ratingVal = placeObj.rating != null ? placeObj.rating : 0;
-        if (minRating > 0 && (placeObj.rating == null || ratingVal < minRating)) {
-          visible = false;
-        }
-
-        // Recensionsfilter
-        const reviewsVal = placeObj.user_ratings_total != null ? placeObj.user_ratings_total : 0;
-        if (minReviews > 0 && reviewsVal < minReviews) {
-          visible = false;
-        }
-
-        // Prisnivåfilter
         if (priceFilter !== "all") {
-          const pl = placeObj.price_level;
-          if (pl == null) {
-            visible = false;
-          } else if (priceFilter === "low" && !(pl === 0 || pl === 1)) {
-            visible = false;
-          } else if (priceFilter === "medium" && pl !== 2) {
-            visible = false;
-          } else if (priceFilter === "high" && !(pl === 3 || pl === 4)) {
-            visible = false;
-          }
+          const p = obj.price_level;
+          if (p == null) visible = false;
+          else if (priceFilter === "low" && p > 1) visible = false;
+          else if (priceFilter === "medium" && p !== 2) visible = false;
+          else if (priceFilter === "high" && p < 3) visible = false;
         }
 
-        marker.setMap(visible ? map : null);
+        marker.setVisible(visible);
       });
     }
 
-    function onMarkerClick(placeObj, marker) {
-      renderDetails(placeObj);
-      showInfoWindow(placeObj, marker);
-    }
+    // -------- INFO WINDOW --------
+    function showInfoWindow(obj, marker) {
+      const sv =
+        "https://maps.googleapis.com/maps/api/streetview?size=320x160&location=" +
+        obj.location.lat() +
+        "," +
+        obj.location.lng() +
+        "&key=" +
+        GOOGLE_API_KEY;
 
-    function showInfoWindow(placeObj, marker) {
-      const typeLabel = placeObj.type === "restaurant" ? "Restaurang" : "Kafé";
-      const ratingText = formatRating(placeObj.rating, placeObj.user_ratings_total);
-      const priceText = formatPriceLevel(placeObj.price_level);
-      const phoneText = placeObj.formatted_phone_number || "Okänt";
-      const streetViewUrl = getStreetViewUrl(placeObj);
+      const html = `
+        <div style="font-size:0.85rem;max-width:260px">
+          <b>${obj.name}</b><br/>
+          ${obj.formatted_address ?? obj.basicAddress}<br/>
+          <br/>
+          <img src="${sv}" style="width:100%;border-radius:6px"/>
+        </div>
+      `;
 
-      const htmlParts = [];
-      htmlParts.push(`<div style="font-size:0.85rem; max-width:260px;">`);
-      htmlParts.push(`<div style="font-weight:600; margin-bottom:0.15rem;">${placeObj.name || "Okänt namn"}</div>`);
-      htmlParts.push(`<div style="color:#555; margin-bottom:0.25rem;">${typeLabel}</div>`);
-      htmlParts.push(`<div><b>Betyg:</b> ${ratingText}</div>`);
-      htmlParts.push(`<div><b>Prisnivå:</b> ${priceText}</div>`);
-      htmlParts.push(`<div><b>Telefon:</b> ${phoneText}</div>`);
-      if (streetViewUrl) {
-        htmlParts.push(
-          `<div style="margin-top:0.35rem;"><img src="${streetViewUrl}" alt="Street View" style="width:100%;border-radius:6px;"/></div>`
-        );
-      }
-      htmlParts.push(`</div>`);
-
-      infoWindow.setContent(htmlParts.join(""));
+      infoWindow.setContent(html);
       infoWindow.open(map, marker);
     }
 
-    function renderDetails(placeObj) {
-      const typeLabel = placeObj.type === "restaurant" ? "Restaurang" : "Kafé";
+    // -------- DETAILS PANEL --------
+    function renderDetails(obj) {
+      titleEl.textContent = obj.name;
+      addressEl.textContent = obj.formatted_address ?? obj.basicAddress;
 
-      placeTitleEl.textContent = placeObj.name || "Okänt namn";
+      const rating =
+        obj.rating != null
+          ? obj.rating.toFixed(1) + " (" + obj.user_ratings_total + " omdömen)"
+          : "Inga betyg";
 
-      const address =
-        placeObj.formatted_address ||
-        placeObj.basicAddress ||
-        "(Adress saknas)";
-      placeAddressEl.textContent = address;
+      const price =
+        obj.price_level == null
+          ? "Okänd"
+          : obj.price_level === 0 || obj.price_level === 1
+          ? "Billigt"
+          : obj.price_level === 2
+          ? "Medel"
+          : "Dyrt";
 
-      const ratingText = formatRating(
-        placeObj.rating,
-        placeObj.user_ratings_total
-      );
-      const priceText = formatPriceLevel(placeObj.price_level);
-      const openText = formatOpenStatus(placeObj.opening_hours);
-      const openingHoursHtml = formatOpeningHours(placeObj.opening_hours);
+      const phone = obj.formatted_phone_number ?? "Okänd";
 
-      const phoneText =
-        placeObj.formatted_phone_number
-          ? placeObj.formatted_phone_number
-          : "Okänt";
+      const hours = obj.opening_hours?.weekday_text
+        ? obj.opening_hours.weekday_text.join("<br>")
+        : "Ingen information";
 
-      const websiteHtml = placeObj.website
-        ? `<a href="${placeObj.website}" target="_blank" rel="noopener noreferrer">${placeObj.website}</a>`
-        : "Okänd";
-
-      placeMetaEl.innerHTML = `
-        <p class="meta-row"><span class="meta-label">Typ:</span> ${typeLabel}</p>
-        <p class="meta-row"><span class="meta-label">Betyg:</span> ${ratingText}</p>
-        <p class="meta-row"><span class="meta-label">Prisnivå:</span> ${priceText}</p>
-        <p class="meta-row"><span class="meta-label">Status:</span> ${openText}</p>
-        <p class="meta-row"><span class="meta-label">Telefon:</span> ${phoneText}</p>
-        <p class="meta-row"><span class="meta-label">Webbplats:</span> ${websiteHtml}</p>
-        <p class="meta-row"><span class="meta-label">Öppettider:</span><br>${openingHoursHtml}</p>
+      metaEl.innerHTML = `
+        <p><b>Betyg:</b> ${rating}</p>
+        <p><b>Prisnivå:</b> ${price}</p>
+        <p><b>Telefon:</b> ${phone}</p>
+        <p><b>Öppettider:</b><br>${hours}</p>
       `;
-
-      // Taggar
-      tagRowEl.innerHTML = "";
-      const tags = [];
-
-      if (placeObj.rating != null) {
-        if (placeObj.rating >= 4.5) {
-          tags.push("Högt betyg");
-        } else if (placeObj.rating < 3.5) {
-          tags.push("Lägre betyg");
-        } else {
-          tags.push("Medelbetyg");
-        }
-      }
-
-      if (typeof placeObj.user_ratings_total === "number") {
-        if (placeObj.user_ratings_total >= 200) {
-          tags.push("Många omdömen");
-        } else if (placeObj.user_ratings_total < 20) {
-          tags.push("Få omdömen");
-        }
-      }
-
-      if (placeObj.price_level != null) {
-        if (placeObj.price_level >= 3) {
-          tags.push("Dyrare segment");
-        } else if (placeObj.price_level <= 1) {
-          tags.push("Billigare segment");
-        }
-      }
-
-      tags.forEach((t) => {
-        const span = document.createElement("span");
-        span.className = "tag";
-        span.textContent = t;
-        tagRowEl.appendChild(span);
-      });
     }
 
-    // Exponera initMap globalt
     window.initMap = initMap;
   </script>
 
-  <!-- Google Maps JavaScript API + Places -->
   <script
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAGWBVPiQLze9-6NBDsCW3MI_UuvQ8SbbE&libraries=places&callback=initMap"
-    async
-    defer
-  ></script>
+    async defer></script>
 </body>
 </html>
