@@ -1,0 +1,16 @@
+{
+  "name": "restaurantmap-backend",
+  "version": "1.0.0",
+  "description": "Backend proxy for Google Places API (New) to provide reservable and other fields to the restaurant prospection map.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
