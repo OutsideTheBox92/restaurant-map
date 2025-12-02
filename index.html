@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <title>Prospektering – Restauranger & kaféer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f5f5f5;
+      color: #222;
+    }
+
+    header {
+      padding: 0.75rem 1rem;
+      background: #1f2933;
+      color: #fff;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.1rem;
+    }
+
+    header p {
+      margin: 0.25rem 0 0;
+      font-size: 0.85rem;
+      opacity: 0.85;
+    }
+
+    #controls {
+      padding: 0.75rem 1rem;
+      background: #ffffff;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      align-items: flex-end;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .control-block {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      font-size: 0.9rem;
+    }
+
+    .control-block label {
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    .type-options {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .type-options label {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      cursor: pointer;
+      font-weight: normal;
+    }
+
+    .control-block select,
+    .control-block input[type="number"] {
+      padding: 0.2rem 0.4rem;
+      font-size: 0.9rem;
+      border-radius: 4px;
+      border: 1px solid #d1d5db;
+      min-width: 80px;
+    }
+
+    #map-and-panel {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1.4fr);
+      gap: 0;
+      height: calc(100vh - 140px);
+    }
+
+    #map {
+      width: 100%;
+      height: 100%;
+    }
+
+    #details {
+      background: #ffffff;
+      border-left: 1px solid #e0e0e0;
+      padding: 1rem;
+      overflow-y: auto;
+    }
+
+    #placeTitle {
+      margin: 0 0 0.25rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    #placeAddress {
+      margin: 0 0 0.25rem;
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    #placeMeta {
+      margin: 0.25rem 0 0.75rem;
+      font-size: 0.9rem;
+    }
+
+    .meta-row {
+      margin-bottom: 0.35rem;
+      font-size: 0.9rem;
+    }
+
+    .meta-label {
+      font-weight: 600;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin: 0.5rem 0 1rem;
+    }
+
+    .tag {
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      border: 1px solid #e0e0e0;
+      font-size: 0.75rem;
+      background: #f8fafc;
+    }
+
+    a {
+      color: #2563eb;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    #hint {
+      margin-top: 1rem;
+      font-size: 0.8rem;
+      color: #777;
+    }
+
+    @media (max-width: 900px) {
+      #map-and-panel {
+        grid-template-columns: 1fr;
+        grid-template-rows: 50vh auto;
+        height: auto;
+      }
+
+      #details {
+        border-left: none;
+        border-top: 1px solid #e0e0e0;
+        height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Prospektering – Restauranger & kaféer</h1>
+    <p>Filtrera på typ, betyg, recensioner, prisnivå och onlinebokning. Klicka på en markör för detaljer.</p>
+  </header>
+
+  <section id="controls">
+    <div class="control-block">
+      <label>Typ av plats</label>
+      <div class="type-options">
+        <label>
+          <input type="radio" name="placeType" value="all" checked />
+          Alla
+        </label>
+        <label>
+          <input type="radio" name="placeType" value="restaurant" />
+          Restauranger
+        </label>
+        <label>
+          <input type="radio" name="placeType" value="cafe" />
+          Kaféer
+        </label>
+      </div>
+    </div>
+
+    <div class="control-block">
+      <label for="minRating">Minsta betyg</label>
+      <select id="minRating">
+        <option value="0">Inget filter</option>
+        <option value="3">3.0+</option>
+        <option value="3.5">3.5+</option>
+        <option value="4">4.0+</option>
+        <option value="4.5">4.5+</option>
+      </select>
+    </div>
+
+    <div class="control-block">
+      <label for="minReviews">Minsta antal omdömen</label>
+      <input id="minReviews" type="number" min="0" value="0" />
+    </div>
+
+    <div class="control-block">
+      <label for="priceFilter">Prisnivå</label>
+      <select id="priceFilter">
+        <option value="all">Alla</option>
+        <option value="low">Billig (0–1)</option>
+        <option value="medium">Medel (2)</option>
+        <option value="high">Dyr (3–4)</option>
+      </select>
+    </div>
+
+    <div class="control-block">
+      <label for="bookingFilter">Onlinebokning</label>
+      <select id="bookingFilter">
+        <option value="all">Alla</option>
+        <option value="with">Endast med onlinebokning</option>
+        <option value="without">Endast utan onlinebokning</option>
+      </select>
+    </div>
+  </section>
+
+  <div id="map-and-panel">
+    <div id="map"></div>
+
+    <aside id="details">
+      <h2 id="placeTitle">Ingen plats vald</h2>
+      <p id="placeAddress"></p>
+      <div id="placeMeta">
+        <p>Välj en markör i kartan för att se information om restaurangen eller kaféet.</p>
+      </div>
+      <div class="tag-row" id="tagRow"></div>
+      <p id="hint">
+        Filtren ovan styr vilka markörer som visas. Onlinebokningsfiltret baseras på om platsen är
+        markerad som bokningsbar i Google (fältet <code>reservable</code> i Places API).
+      </p>
+    </aside>
+  </div>
+
+  <script>
+    let map;
+    let placesService;
+    let markers = []; // { marker, placeObj }
+
+    let currentTypeFilter = "all";
+    let minRating = 0;
+    let minReviews = 0;
+    let priceFilter = "all";
+    let bookingFilter = "all";
+
+    const placeTitleEl   = document.getElementById("placeTitle");
+    const placeAddressEl = document.getElementById("placeAddress");
+    const placeMetaEl    = document.getElementById("placeMeta");
+    const tagRowEl       = document.getElementById("tagRow");
+
+    // Filter-lyssnare
+    document.querySelectorAll('input[name="placeType"]').forEach((radio) => {
+      radio.addEventListener("change", (e) => {
+        currentTypeFilter = e.target.value;
+        updateMarkersVisibility();
+      });
+    });
+
+    document.getElementById("minRating").addEventListener("change", (e) => {
+      minRating = parseFloat(e.target.value) || 0;
+      updateMarkersVisibility();
+    });
+
+    document.getElementById("minReviews").addEventListener("input", (e) => {
+      minReviews = parseInt(e.target.value || "0", 10);
+      updateMarkersVisibility();
+    });
+
+    document.getElementById("priceFilter").addEventListener("change", (e) => {
+      priceFilter = e.target.value;
+      updateMarkersVisibility();
+    });
+
+    document.getElementById("bookingFilter").addEventListener("change", (e) => {
+      bookingFilter = e.target.value;
+      updateMarkersVisibility();
+    });
+
+    function formatPriceLevel(priceLevel) {
+      if (priceLevel == null) return "Okänd";
+      switch (priceLevel) {
+        case 0: return "Mycket billigt";
+        case 1: return "Billigt";
+        case 2: return "Medel";
+        case 3: return "Dyrare";
+        case 4: return "Lyx";
+        default: return "Okänd";
+      }
+    }
+
+    function formatRating(rating, total) {
+      if (rating == null) return "Inga betyg";
+      const parts = [];
+      parts.push(rating.toFixed(1) + " / 5");
+      if (typeof total === "number") {
+        parts.push("(" + total + " omdömen)");
+      }
+      return parts.join(" ");
+    }
+
+    function formatOnlineBooking(reservable) {
+      if (reservable === true) return "Ja (bokningsbar via Google)";
+      if (reservable === false) return "Nej";
+      return "Okänt";
+    }
+
+    function formatOpenStatus(currentOpeningHours) {
+      if (!currentOpeningHours) return "Okänt";
+      const isOpen = currentOpeningHours.open_now;
+      return isOpen ? "Öppet nu" : "Stängt nu";
+    }
+
+    function clearDetails() {
+      placeTitleEl.textContent   = "Ingen plats vald";
+      placeAddressEl.textContent = "";
+      placeMetaEl.innerHTML      = "<p>Välj en markör i kartan för att se information om restaurangen eller kaféet.</p>";
+      tagRowEl.innerHTML         = "";
+    }
+
+    // Google Maps callback
+    function initMap() {
+      const center = { lat: 59.334, lng: 18.063 }; // Stockholm
+      map = new google.maps.Map(document.getElementById("map"), {
+        center,
+        zoom: 13,
+      });
+
+      placesService = new google.maps.places.PlacesService(map);
+
+      loadNearbyPlaces(center);
+    }
+
+    function loadNearbyPlaces(center) {
+      const requests = [
+        { location: center, radius: 2000, type: "restaurant" },
+        { location: center, radius: 2000, type: "cafe" },
+      ];
+
+      requests.forEach((req) => {
+        placesService.nearbySearch(req, (results, status) => {
+          if (
+            status !== google.maps.places.PlacesServiceStatus.OK ||
+            !results
+          ) {
+            return;
+          }
+
+          results.forEach((place) => {
+            if (!place.geometry || !place.geometry.location) return;
+
+            const placeType = req.type; // "restaurant" eller "cafe"
+
+            const placeObj = {
+              id: place.place_id,
+              name: place.name,
+              type: placeType,
+              location: place.geometry.location,
+              basicAddress: place.vicinity || "",
+              // Detaljer / filterfält
+              detailsLoaded: false,
+              rating: place.rating ?? null,
+              user_ratings_total: place.user_ratings_total ?? null,
+              price_level: place.price_level ?? null,
+              formatted_address: null,
+              formatted_phone_number: null,
+              website: null,
+              reservable: null,
+              current_opening_hours: null,
+            };
+
+            createMarker(placeObj);
+            fetchPlaceDetails(placeObj); // hämta fulla detaljer inkl reservable
+          });
+
+          updateMarkersVisibility();
+        });
+      });
+    }
+
+    function fetchPlaceDetails(placeObj) {
+      const request = {
+        placeId: placeObj.id,
+        fields: [
+          "name",
+          "rating",
+          "user_ratings_total",
+          "price_level",
+          "formatted_address",
+          "formatted_phone_number",
+          "website",
+          "reservable",
+          "current_opening_hours"
+        ],
+      };
+
+      placesService.getDetails(request, (result, status) => {
+        if (status !== google.maps.places.PlacesServiceStatus.OK || !result) {
+          return;
+        }
+
+        placeObj.detailsLoaded          = true;
+        placeObj.name                   = result.name || placeObj.name;
+        placeObj.rating                 = result.rating ?? placeObj.rating;
+        placeObj.user_ratings_total     = result.user_ratings_total ?? placeObj.user_ratings_total;
+        placeObj.price_level            = result.price_level ?? placeObj.price_level;
+        placeObj.formatted_address      = result.formatted_address || placeObj.basicAddress;
+        placeObj.formatted_phone_number = result.formatted_phone_number || null;
+        placeObj.website                = result.website || null;
+        placeObj.reservable             = (typeof result.reservable !== "undefined")
+                                          ? result.reservable
+                                          : placeObj.reservable;
+        placeObj.current_opening_hours  = result.current_opening_hours || placeObj.current_opening_hours;
+
+        updateMarkersVisibility();
+      });
+    }
+
+    function createMarker(placeObj) {
+      const marker = new google.maps.Marker({
+        map,
+        position: placeObj.location,
+      });
+
+      marker.addListener("click", () => {
+        onMarkerClick(placeObj);
+      });
+
+      markers.push({ marker, placeObj });
+    }
+
+    function updateMarkersVisibility() {
+      markers.forEach(({ marker, placeObj }) => {
+        let visible = true;
+
+        // Typfilter
+        if (currentTypeFilter !== "all" && placeObj.type !== currentTypeFilter) {
+          visible = false;
+        }
+
+        // Betygsfilter
+        const ratingVal = placeObj.rating != null ? placeObj.rating : 0;
+        if (minRating > 0 && (placeObj.rating == null || ratingVal < minRating)) {
+          visible = false;
+        }
+
+        // Recensionsfilter
+        const reviewsVal = placeObj.user_ratings_total != null ? placeObj.user_ratings_total : 0;
+        if (minReviews > 0 && reviewsVal < minReviews) {
+          visible = false;
+        }
+
+        // Prisnivåfilter
+        if (priceFilter !== "all") {
+          const pl = placeObj.price_level;
+          if (pl == null) {
+            visible = false;
+          } else if (priceFilter === "low" && !(pl === 0 || pl === 1)) {
+            visible = false;
+          } else if (priceFilter === "medium" && pl !== 2) {
+            visible = false;
+          } else if (priceFilter === "high" && !(pl === 3 || pl === 4)) {
+            visible = false;
+          }
+        }
+
+        // Onlinebokning
+        if (bookingFilter !== "all") {
+          if (bookingFilter === "with") {
+            if (placeObj.reservable !== true) visible = false;
+          } else if (bookingFilter === "without") {
+            if (placeObj.reservable !== false) visible = false;
+          }
+        }
+
+        marker.setMap(visible ? map : null);
+      });
+    }
+
+    function onMarkerClick(placeObj) {
+      // Om detaljer inte är klara än: försök hämta, men visa det vi har
+      if (!placeObj.detailsLoaded) {
+        fetchPlaceDetails(placeObj);
+      }
+      renderDetails(placeObj);
+    }
+
+    function renderDetails(placeObj) {
+      const typeLabel = placeObj.type === "restaurant" ? "Restaurang" : "Kafé";
+
+      placeTitleEl.textContent = placeObj.name || "Okänt namn";
+
+      const address =
+        placeObj.formatted_address ||
+        placeObj.basicAddress ||
+        "(Adress saknas)";
+      placeAddressEl.textContent = address;
+
+      const ratingText = formatRating(
+        placeObj.rating,
+        placeObj.user_ratings_total
+      );
+      const priceText = formatPriceLevel(placeObj.price_level);
+      const bookingText = formatOnlineBooking(placeObj.reservable);
+      const openText = formatOpenStatus(placeObj.current_opening_hours);
+
+      const phoneText =
+        placeObj.formatted_phone_number
+          ? placeObj.formatted_phone_number
+          : "Okänt";
+
+      const websiteHtml = placeObj.website
+        ? `<a href="${placeObj.website}" target="_blank" rel="noopener noreferrer">${placeObj.website}</a>`
+        : "Okänd";
+
+      placeMetaEl.innerHTML = `
+        <p class="meta-row"><span class="meta-label">Typ:</span> ${typeLabel}</p>
+        <p class="meta-row"><span class="meta-label">Betyg:</span> ${ratingText}</p>
+        <p class="meta-row"><span class="meta-label">Prisnivå:</span> ${priceText}</p>
+        <p class="meta-row"><span class="meta-label">Onlinebokning:</span> ${bookingText}</p>
+        <p class="meta-row"><span class="meta-label">Status:</span> ${openText}</p>
+        <p class="meta-row"><span class="meta-label">Telefon:</span> ${phoneText}</p>
+        <p class="meta-row"><span class="meta-label">Webbplats:</span> ${websiteHtml}</p>
+      `;
+
+      // Taggar för snabb prospekteringskänsla
+      tagRowEl.innerHTML = "";
+      const tags = [];
+
+      if (placeObj.rating != null) {
+        if (placeObj.rating >= 4.5) {
+          tags.push("Högt betyg");
+        } else if (placeObj.rating < 3.5) {
+          tags.push("Lägre betyg");
+        } else {
+          tags.push("Medelbetyg");
+        }
+      }
+
+      if (typeof placeObj.user_ratings_total === "number") {
+        if (placeObj.user_ratings_total >= 200) {
+          tags.push("Många omdömen");
+        } else if (placeObj.user_ratings_total < 20) {
+          tags.push("Få omdömen");
+        }
+      }
+
+      if (placeObj.price_level != null) {
+        if (placeObj.price_level >= 3) {
+          tags.push("Dyrare segment");
+        } else if (placeObj.price_level <= 1) {
+          tags.push("Billigare segment");
+        }
+      }
+
+      if (placeObj.reservable === true) {
+        tags.push("Har onlinebokning");
+      } else if (placeObj.reservable === false) {
+        tags.push("Ingen onlinebokning via Google");
+      }
+
+      tags.forEach((t) => {
+        const span = document.createElement("span");
+        span.className = "tag";
+        span.textContent = t;
+        tagRowEl.appendChild(span);
+      });
+    }
+
+    // Exponera initMap globalt
+    window.initMap = initMap;
+  </script>
+
+  <!-- Google Maps JavaScript API + Places.
+       Byt ut YOUR_GOOGLE_API_KEY_HERE mot din API-nyckel (begränsad till din GitHub Pages-domän). -->
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_API_KEY_HERE&libraries=places&callback=initMap"
+    async
+    defer
+  ></script>
+</body>
+</html>
